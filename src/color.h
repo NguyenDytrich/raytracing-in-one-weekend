@@ -11,6 +11,8 @@ typedef vec3 color;
 void fprint_color(FILE *file, color *pixel);
 
 /** Create a new RGB color */
-void *new_color(double r, double g, double b);
+color *new_color(double r, double g, double b);
+
+color *ray_color(ray r);
 
 #endif
