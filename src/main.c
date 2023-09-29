@@ -69,6 +69,7 @@ int main()
     {
       color *px = new_color((double)i / (WIDTH - 1), (double)j / (HEIGHT - 1), 0);
       fprint_color(file, px);
+      free(px);
       print_progress_bar((i * WIDTH) + j + 1, WIDTH * HEIGHT, 20);
     }
   }
