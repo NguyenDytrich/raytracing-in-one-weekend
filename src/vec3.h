@@ -1,10 +1,15 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include <stdlib.h>
 #include <math.h>
 
 /** A 3D vector */
-typedef struct vec3;
+typedef struct vec3
+{
+  double e[3];
+} vec3;
+
 typedef vec3 point;
 
 /** Create a pointer to a new vec3 */

@@ -1,11 +1,6 @@
 #include <math.h>
 #include "vec3.h"
 
-typedef struct vec3
-{
-  double e[3];
-} vec3;
-
 struct vec3 *new_vec3(double i, double j, double k)
 {
   struct vec3 *vec = malloc(sizeof(struct vec3));
@@ -48,6 +43,7 @@ struct vec3 *cross_vec3(vec3 *a, vec3 *b)
       (a->e[1] * b->e[2]) - (a->e[2] * b->e[1]),
       (a->e[2] * b->e[0]) - (a->e[0] * b->e[2]),
       (a->e[0] * b->e[1]) - (a->e[1] * b->e[0]));
+  return result;
 }
 
 double dot_vec3(vec3 *a, vec3 *b)

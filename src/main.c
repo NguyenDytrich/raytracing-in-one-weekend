@@ -5,9 +5,12 @@
 #include <unistd.h>
 #include <inttypes.h>
 
+#include "color.h"
+#include "vec3.h"
+
 // Image dimensions
-int WIDTH = 1920;
-int HEIGHT = 1080;
+int WIDTH = 256;
+int HEIGHT = 256;
 
 // Progress bar
 uint64_t PREVIOUS_UPDATE = 0;
@@ -64,10 +67,8 @@ int main()
   {
     for (int j = 0; j < WIDTH; j++)
     {
-      int r = 255.999 * ((double)i / (WIDTH - 1));
-      int g = 255.999 * ((double)j / (HEIGHT - 1));
-      int b = (r + g) / 2;
-      fprintf(file, "%d %d %d\n", r, g, b);
+      color *px = new_color((double)i / (WIDTH - 1), (double)j / (HEIGHT - 1), 0);
+      fprint_color(file, px);
       print_progress_bar((i * WIDTH) + j + 1, WIDTH * HEIGHT, 20);
     }
   }
