@@ -18,35 +18,34 @@ typedef struct ray
   vec3 *direction;
 } ray;
 
-/** Create a pointer to a new vec3 */
-vec3 *
-new_vec3(double i, double j, double k);
+/** Create a new vec3 */
+vec3 new_vec3(double i, double j, double k);
 
-/** Add 2 vec3's and return a new vec3 pointer*/
-vec3 *add_vec3(vec3 *a, vec3 *b);
+/** Add 2 vec3's and output to *out */
+void add_vec3(vec3 a, vec3 b, vec3 *out);
 
-/** Subtract 2 vec3's and return a new vec3 pointer */
-vec3 *sub_vec3(vec3 *a, vec3 *b);
+/** Subtract 2 vec3's and output to *out */
+void sub_vec3(vec3 a, vec3 b, vec3 *out);
 
-/** Multiply a vec3 by `b` and return a new vec3 pointer */
-vec3 *mult_vec3(vec3 *a, double b);
+/** Multiply a vec3 by `b` and output to *out */
+void mult_vec3(vec3 a, double b, vec3 *out);
 
-/** Divide a vec3 by `b` and return a new vec3 pointer */
-vec3 *div_vec3(vec3 *a, double b);
+/** Divide a vec3 by `b` and output to *out */
+void div_vec3(vec3 a, double b, vec3 *out);
 
-/** Calculate the cross product of two vec3's returned as a new vec3 pointer */
-vec3 *cross_vec3(vec3 *a, vec3 *b);
+/** Calculate the cross product of two vec3's and output to *out */
+void cross_vec3(vec3 a, vec3 b, vec3 *out);
 
-vec3 *unit_vec3(vec3 *vec);
+void unit_vec3(vec3 vec, vec3 *out);
 
 /** Calculate the dot product of two vec3's */
-double dot_vec3(vec3 *a, vec3 *b);
+double dot_vec3(vec3 a, vec3 b);
 
 /** Return the length of a vec3 */
-double len_vec3(vec3 *vec);
+double len_vec3(vec3 vec);
 
 /** Return the squared length of a vec3 */
-double sqr_len_vec3(vec3 *vec);
+double sqr_len_vec3(vec3 vec);
 
 /**
  * Returns a ray on `vec` as calculated from the `origin` point using the formula
@@ -54,7 +53,7 @@ double sqr_len_vec3(vec3 *vec);
  * Where `A` is the ray origin, `B` is the direction (represented by a vec3) and
  * `t` is a real number
  */
-point3 *ray_at(ray r, double t);
+void ray_at(ray r, double t, point3 *out);
 
 /**
  * Creates a new struct of a ray with pointers to the corresponding vec3 arguments.

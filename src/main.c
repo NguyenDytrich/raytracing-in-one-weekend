@@ -10,7 +10,7 @@
 
 // Image dimensions
 double ASPECT_RATIO = 16.0 / 9.0;
-int WIDTH = 400;
+int WIDTH = 1920;
 double VIEWPORT_HEIGHT = 2.0;
 
 int image_height()
@@ -24,33 +24,32 @@ double viewport_width()
 }
 
 /** Calculate a viewport upper left returning a pointer to a new vec3*/
-vec3 *calc_vp_upper_left(vec3 *camera_center, double focal_len, vec3 *viewport_u, vec3 *viewport_v)
+vec3 calc_vp_upper_left(vec3 camera_center, double focal_len, vec3 viewport_u, vec3 viewport_v)
 {
-  vec3 *du_div_2 = div_vec3(viewport_u, 2);
-  vec3 *dv_div_2 = div_vec3(viewport_v, 2);
-  vec3 *vec_focal_len = new_vec3(0, 0, focal_len);
+  vec3 du_div2;
+  vec3 dv_div2;
+  div_vec3(viewport_u, 2, &du_div2);
+  div_vec3(viewport_v, 2, &dv_div2);
 
-  vec3 *diff = sub_vec3(camera_center, vec_focal_len);
-  vec3 *diff2 = sub_vec3(diff, du_div_2);
-  vec3 *diff3 = sub_vec3(diff2, dv_div_2);
+  vec3 vec_focal_len = new_vec3(0, 0, focal_len);
 
-  free(vec_focal_len);
-  free(du_div_2);
-  free(dv_div_2);
-  free(diff);
-  free(diff2);
+  vec3 diff;
+  sub_vec3(camera_center, vec_focal_len, &diff);
+  sub_vec3(diff, du_div2, &diff);
+  sub_vec3(diff, dv_div2, &diff);
 
-  return diff3;
+  return diff;
 }
 
 /** Calculate the pixel at (0,0) returning a pointer to a new vec3 */
-vec3 *calc_pixel_00_loc(vec3 *vp_upper_left, vec3 *px_du, vec3 *px_dv)
+vec3 calc_pixel_00_loc(vec3 vp_upper_left, vec3 px_du, vec3 px_dv)
 {
-  vec3 *sum_px_delta = add_vec3(px_du, px_dv);
-  vec3 *mult_result = mult_vec3(sum_px_delta, 0.5);
-  vec3 *result = add_vec3(vp_upper_left, mult_result);
-  free(sum_px_delta);
-  free(mult_result);
+  vec3 result;
+
+  add_vec3(px_du, px_dv, &result);
+  mult_vec3(result, 0.5, &result);
+  add_vec3(vp_upper_left, result, &result);
+
   return result;
 }
 
@@ -101,22 +100,23 @@ int main()
 
   // Camera
   double focal_len = 1.0;
-  point3 *camera_center = new_vec3(0, 0, 0);
+  point3 camera_center = new_vec3(0, 0, 0);
 
   double VEIWPORT_WIDTH = viewport_width();
   // Viewport
   // Vectors represent the dimensions of the viewport, `viewport_u` is horizontal
   // and `viewport_v` is vertical
-  vec3 *viewport_u = new_vec3(VEIWPORT_WIDTH, 0, 0);
-  vec3 *viewport_v = new_vec3(0, -VIEWPORT_HEIGHT, 0);
+  vec3 viewport_u = new_vec3(VEIWPORT_WIDTH, 0, 0);
+  vec3 viewport_v = new_vec3(0, -VIEWPORT_HEIGHT, 0);
 
   // Calculate delta values for pixel spacing
-  vec3 *pixel_du = div_vec3(viewport_u, WIDTH);
-  vec3 *pixel_dv = div_vec3(viewport_v, HEIGHT);
+  vec3 pixel_du, pixel_dv;
+  div_vec3(viewport_u, WIDTH, &pixel_du);
+  div_vec3(viewport_v, HEIGHT, &pixel_dv);
 
   // Calculate position of upper left pixel
-  vec3 *viewport_Q = calc_vp_upper_left(camera_center, focal_len, viewport_u, viewport_v);
-  vec3 *pixel00_loc = calc_pixel_00_loc(viewport_Q, pixel_du, pixel_dv);
+  vec3 viewport_Q = calc_vp_upper_left(camera_center, focal_len, viewport_u, viewport_v);
+  vec3 pixel00_loc = calc_pixel_00_loc(viewport_Q, pixel_du, pixel_dv);
 
   printf("Creating %dx%d image to 'out.ppm'...\n", image_height(), WIDTH);
   FILE *file = fopen("out.ppm", "wb");
@@ -131,22 +131,18 @@ int main()
     {
       // color *px = new_color((double)i / (WIDTH - 1), (double)j / (HEIGHT - 1), i + j);
       // Calculate pixel center
-      vec3 *i_du = mult_vec3(pixel_du, (double)i);
-      vec3 *j_dv = mult_vec3(pixel_dv, (double)j);
-      vec3 *sum_px_d = add_vec3(i_du, j_dv);
-      vec3 *px_center = add_vec3(pixel00_loc, sum_px_d);
+      vec3 px_center;
+      vec3 i_du, j_dv;
+      mult_vec3(pixel_du, (double)i, &i_du);
+      mult_vec3(pixel_dv, (double)j, &j_dv);
+      add_vec3(i_du, j_dv, &px_center);
+      add_vec3(pixel00_loc, px_center, &px_center);
 
-      vec3 *ray_direction = sub_vec3(px_center, camera_center);
-      ray r = new_ray(camera_center, ray_direction);
-      color *px = ray_color(r);
-
+      vec3 ray_direction;
+      sub_vec3(px_center, camera_center, &ray_direction);
+      ray r = new_ray(&camera_center, &ray_direction);
+      color px = ray_color(r);
       fprint_color(file, px);
-      free(px);
-      free(i_du);
-      free(j_dv);
-      free(sum_px_d);
-      free(px_center);
-      free(ray_direction);
 
       print_progress_bar((j * WIDTH) + i + 1, WIDTH * HEIGHT, 20);
     }

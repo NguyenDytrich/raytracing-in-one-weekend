@@ -8,11 +8,11 @@
 typedef vec3 color;
 
 /** Writes a pixel to a .ppm file */
-void fprint_color(FILE *file, color *pixel);
+void fprint_color(FILE *file, color pixel);
 
 /** Create a new RGB color */
-color *new_color(double r, double g, double b);
+color new_color(double r, double g, double b);
 
-color *ray_color(ray r);
+color ray_color(ray r);
 
 #endif
