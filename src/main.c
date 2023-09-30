@@ -148,7 +148,7 @@ int main()
       free(px_center);
       free(ray_direction);
 
-      print_progress_bar((i * WIDTH) + j + 1, WIDTH * HEIGHT, 20);
+      print_progress_bar((j * WIDTH) + i + 1, WIDTH * HEIGHT, 20);
     }
   }
   fclose(file);
