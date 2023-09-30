@@ -20,19 +20,19 @@ int image_height()
 }
 double viewport_width()
 {
-  return VIEWPORT_HEIGHT * (double)(WIDTH / image_height());
+  return VIEWPORT_HEIGHT * ((double)WIDTH / image_height());
 }
 
 /** Calculate a viewport upper left returning a pointer to a new vec3*/
-vec3 *calc_vp_upper_left(vec3 *camera_center, double focal_len, vec3 *px_du, vec3 *px_dv)
+vec3 *calc_vp_upper_left(vec3 *camera_center, double focal_len, vec3 *viewport_u, vec3 *viewport_v)
 {
-  vec3 *du_div_2 = div_vec3(px_du, 2);
-  vec3 *dv_div_2 = div_vec3(px_dv, 2);
+  vec3 *du_div_2 = div_vec3(viewport_u, 2);
+  vec3 *dv_div_2 = div_vec3(viewport_v, 2);
   vec3 *vec_focal_len = new_vec3(0, 0, focal_len);
 
   vec3 *diff = sub_vec3(camera_center, vec_focal_len);
   vec3 *diff2 = sub_vec3(diff, du_div_2);
-  vec3 *diff3 = sub_vec3(diff, dv_div_2);
+  vec3 *diff3 = sub_vec3(diff2, dv_div_2);
 
   free(vec_focal_len);
   free(du_div_2);
@@ -115,7 +115,7 @@ int main()
   vec3 *pixel_dv = div_vec3(viewport_v, HEIGHT);
 
   // Calculate position of upper left pixel
-  vec3 *viewport_Q = calc_vp_upper_left(camera_center, focal_len, pixel_du, pixel_dv);
+  vec3 *viewport_Q = calc_vp_upper_left(camera_center, focal_len, viewport_u, viewport_v);
   vec3 *pixel00_loc = calc_pixel_00_loc(viewport_Q, pixel_du, pixel_dv);
 
   printf("Creating %dx%d image to 'out.ppm'...\n", image_height(), WIDTH);
