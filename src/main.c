@@ -4,6 +4,7 @@
 #include "color.h"
 #include "vec3.h"
 #include "progress.h"
+#include "collision.h"
 
 // Image dimensions
 double ASPECT_RATIO = 16.0 / 9.0;
@@ -75,6 +76,11 @@ int main()
   vec3 viewport_Q = calc_vp_upper_left(camera_center, focal_len, viewport_u, viewport_v);
   vec3 pixel00_loc = calc_pixel_00_loc(viewport_Q, pixel_du, pixel_dv);
 
+  // TODO: move this into a utility
+  hittable *world = (hittable *)malloc(sizeof(hittable) * 2);
+  world[0] = new_sphere(new_vec3(0, 0, -1), 0.5);
+  world[1] = new_sphere(new_vec3(0, -100.5, -1), 100.0);
+
   printf("Creating %dx%d image to 'out.ppm'...\n", image_height(), WIDTH);
   FILE *file = fopen("out.ppm", "wb");
 
@@ -86,7 +92,6 @@ int main()
   {
     for (int i = 0; i < WIDTH; i++)
     {
-      // color *px = new_color((double)i / (WIDTH - 1), (double)j / (HEIGHT - 1), i + j);
       // Calculate pixel center
       vec3 px_center;
       vec3 i_du, j_dv;
@@ -98,7 +103,7 @@ int main()
       vec3 ray_direction;
       sub_vec3(px_center, camera_center, &ray_direction);
       ray r = new_ray(&camera_center, &ray_direction);
-      color px = ray_color(r);
+      color px = ray_color(r, world, sizeof(hittable) * 2);
       fprint_color(file, px);
 
       print_progress_bar((j * WIDTH) + i + 1, WIDTH * HEIGHT, 20);
