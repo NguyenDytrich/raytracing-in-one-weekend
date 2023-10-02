@@ -14,17 +14,17 @@ double hit_sphere(point3 center, double radius, ray r)
 {
   vec3 oc;
   sub_vec3(*(r.origin), center, &oc);
-  double a = dot_vec3(*(r.direction), *(r.direction));
-  double b = 2.0 * dot_vec3(oc, *(r.direction));
-  double c = dot_vec3(oc, oc) - radius * radius;
-  double discriminant = b * b - 4 * a * c;
+  double a = sqr_len_vec3(*(r.direction));       // V * V == len(V)**2!
+  double hb = dot_vec3(oc, *(r.direction));      // 2h
+  double c = sqr_len_vec3(oc) - radius * radius; // V * V == len(V)**2!
+  double discriminant = hb * hb - a * c;
   if (discriminant < 0)
   {
     return -1.0;
   }
   else
   {
-    return (-b - sqrt(discriminant)) / (2.0 * a);
+    return (-hb - sqrt(discriminant) / a);
   };
 }
 
