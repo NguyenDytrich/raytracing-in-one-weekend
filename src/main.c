@@ -1,16 +1,13 @@
 #include <stdlib.h>
-#include <stdbool.h>
 #include <stdio.h>
-#include <time.h>
-#include <unistd.h>
-#include <inttypes.h>
 
 #include "color.h"
 #include "vec3.h"
+#include "progress.h"
 
 // Image dimensions
 double ASPECT_RATIO = 16.0 / 9.0;
-int WIDTH = 1920;
+int WIDTH = 400;
 double VIEWPORT_HEIGHT = 2.0;
 
 int image_height()
@@ -51,46 +48,6 @@ vec3 calc_pixel_00_loc(vec3 vp_upper_left, vec3 px_du, vec3 px_dv)
   add_vec3(vp_upper_left, result, &result);
 
   return result;
-}
-
-// Progress bar
-uint64_t PREVIOUS_UPDATE = 0;
-int PROGRESS_TICK_RATE = 10; /** in ms */
-
-uint64_t ms_time()
-{
-  struct timespec time;
-  clock_gettime(CLOCK_REALTIME, &time);
-  long seconds = time.tv_sec;
-  long nanoseconds = time.tv_nsec;
-  return (seconds * 1000) + (nanoseconds / 1e6);
-}
-
-void print_progress_bar(int status, int max, int length)
-{
-  double ratio = (double)status / (double)max;
-  int char_threshold = ratio * length;
-  char *bar = malloc(sizeof(char) * length);
-
-  for (int i = 0; i < sizeof(char) * length; i++)
-  {
-    if (i < char_threshold)
-    {
-      bar[i] = '#';
-    }
-    else
-    {
-      bar[i] = ' ';
-    }
-  }
-  int percentage = status == max ? 100 : ratio * 100;
-  uint64_t delta_time = (ms_time() - PREVIOUS_UPDATE);
-  bar[(sizeof(char) * length) - 1] = status == max ? '#' : ' ';
-  if (PREVIOUS_UPDATE == 0 || delta_time >= PROGRESS_TICK_RATE || status == max)
-  {
-    printf("\e[?25lProgress: [%s] (%d%%)\t%d/%d\r", bar, percentage, status, max);
-    PREVIOUS_UPDATE = ms_time();
-  }
 }
 
 int main()
@@ -148,7 +105,7 @@ int main()
     }
   }
   fclose(file);
-  printf("\nDone! (%" PRIu64 "ms)\n\e[?25h", ms_time() - start);
+  printf("Done! (%.2fs)\n\e[?25h", (double)(ms_time() - start) / 1000);
 
   return 0;
 }
