@@ -1,4 +1,5 @@
 #include "collision.h"
+#include "mymem.h"
 
 void set_face_normal(ray r, vec3 outward_normal, hit *hit)
 {
@@ -58,7 +59,7 @@ hittable new_sphere(point3 center, double radius)
 {
   // !!! This is a memory leak
   // But don't need to fix for now
-  sphere *s = (sphere *)malloc(sizeof(sphere));
+  sphere *s = (sphere *)my_malloc(sizeof(sphere));
   s->center = center;
   s->radius = radius;
   hittable obj = {

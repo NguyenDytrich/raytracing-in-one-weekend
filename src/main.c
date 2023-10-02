@@ -5,6 +5,7 @@
 #include "vec3.h"
 #include "progress.h"
 #include "collision.h"
+#include "mymem.h"
 
 // Image dimensions
 double ASPECT_RATIO = 16.0 / 9.0;
@@ -77,7 +78,7 @@ int main()
   vec3 pixel00_loc = calc_pixel_00_loc(viewport_Q, pixel_du, pixel_dv);
 
   // TODO: move this into a utility
-  hittable *world = (hittable *)malloc(sizeof(hittable) * 2);
+  hittable *world = (hittable *)my_malloc(sizeof(hittable) * 2);
   world[0] = new_sphere(new_vec3(0, 0, -1), 0.5);
   world[1] = new_sphere(new_vec3(0, -100.5, -1), 100.0);
 
@@ -111,6 +112,8 @@ int main()
   }
   fclose(file);
   printf("Done! (%.2fs)\n\e[?25h", (double)(ms_time() - start) / 1000);
+  // Track the memory leakage in case it becomes big enough to cause problems
+  printf("Memory leakage: %db\n", bytes_allocated());
 
   return 0;
 }
