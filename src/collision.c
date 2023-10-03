@@ -16,8 +16,22 @@ void set_face_normal(ray r, vec3 outward_normal, hit *hit)
   }
 }
 
-bool __hit_sphere(void *_s, ray r, double ray_tmin, double ray_tmax, hit *hit_out)
+/** Returns true if the interval contains i, inclusive bounds */
+bool i_contains(interval i, double value)
 {
+  return (value <= i.max && value >= i.min);
+}
+
+/** Returns true if the interval contains i, exclusive bounds */
+bool i_surrounds(interval i, double value)
+{
+  return (value < i.max && value > i.min);
+}
+
+bool __hit_sphere(void *_s, ray r, ray_t rt, hit *hit_out)
+{
+  double ray_tmin = rt.min;
+  double ray_tmax = rt.max;
   sphere *s = (sphere *)_s;
   vec3 oc;
 
@@ -34,10 +48,10 @@ bool __hit_sphere(void *_s, ray r, double ray_tmin, double ray_tmax, hit *hit_ou
   // Since the equation is quadratic, we check +/-
   double sqrtd = sqrt(discriminant);
   double root = (-hb - sqrtd) / a;
-  if (root <= ray_tmin || root >= ray_tmax)
+  if (!i_surrounds(rt, root))
   {
     root = (-hb + sqrtd) / a;
-    if (root <= ray_tmin || root >= ray_tmax)
+    if (!i_surrounds(rt, root))
     {
       return false;
     }
@@ -73,21 +87,21 @@ void free_hittable(hittable obj)
   free(obj.data);
 }
 
-bool collision(hittable obj, ray r, double r_tmin, double r_tmax, hit *hit_out)
+bool collision(hittable obj, ray r, ray_t rt, hit *hit_out)
 {
-  return obj.__collision(obj.data, r, r_tmin, r_tmax, hit_out);
+  return obj.__collision(obj.data, r, rt, hit_out);
 }
 
-bool list_collision(hittable *objs, int obj_size, ray r, double r_tmin, double r_tmax, hit *hit_out)
+bool list_collision(hittable *objs, int obj_size, ray r, ray_t rt, hit *hit_out)
 {
   bool has_hit = false;
-  double closest = r_tmax;
+  ray_t closest = {rt.min, rt.max};
   for (int i = 0; i < obj_size / sizeof(hittable); i++)
   {
-    if (collision(objs[i], r, r_tmin, closest, hit_out))
+    if (collision(objs[i], r, closest, hit_out))
     {
       has_hit = true;
-      closest = hit_out->t;
+      closest.max = hit_out->t;
     }
   }
   return has_hit;

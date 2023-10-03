@@ -12,8 +12,12 @@ color new_color(double r, double g, double b)
 
 color ray_color(ray r, hittable *world, int size_world)
 {
+  ray_t rt = {
+      0,
+      INFINITY};
+
   hit h;
-  if (list_collision(world, size_world, r, 0, INFINITY, &h))
+  if (list_collision(world, size_world, r, rt, &h))
   {
     color c;
     add_vec3(h.normal, new_color(1, 1, 1), &c);

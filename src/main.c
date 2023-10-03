@@ -113,7 +113,7 @@ int main()
   fclose(file);
   printf("Done! (%.2fs)\n\e[?25h", (double)(ms_time() - start) / 1000);
   // Track the memory leakage in case it becomes big enough to cause problems
-  printf("Memory leakage: %db\n", bytes_allocated());
+  printf("Heap memory used: %db\n", bytes_allocated());
 
   return 0;
 }

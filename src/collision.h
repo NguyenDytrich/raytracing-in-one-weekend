@@ -6,6 +6,15 @@
 
 #include "vec3.h"
 
+/** Min an max values for ray `t` values */
+typedef struct interval
+{
+  double min;
+  double max;
+} interval;
+
+typedef interval ray_t;
+
 typedef struct hit
 {
   point3 p;
@@ -16,7 +25,7 @@ typedef struct hit
 
 typedef struct hittable
 {
-  bool (*__collision)(void *data, ray r, double r_tmin, double r_tmax, hit *hit_out);
+  bool (*__collision)(void *data, ray r, ray_t rt, hit *hit_out);
   void *data;
 } hittable;
 
@@ -27,10 +36,8 @@ typedef struct sphere
 } sphere;
 
 /** Check if a ray hits an object */
-bool collision(hittable obj, ray r, double r_tmin, double r_tmax, hit *hit_out);
-bool list_collision(hittable *objs, int size_objs, ray r, double r_tmin, double r_tmax, hit *hit_out);
-
-bool __hit_sphere(void *_s, ray r, double ray_tmin, double ray_tmax, hit *hit_out);
+bool collision(hittable obj, ray r, ray_t rt, hit *hit_out);
+bool list_collision(hittable *objs, int size_objs, ray r, ray_t rt, hit *hit_out);
 
 hittable new_sphere(point3 center, double radius);
 #endif
